@@ -1,0 +1,64 @@
+10
+
+dir
+95
+https://androidchessgame.googlecode.com/svn/trunk/Chess/res
+https://androidchessgame.googlecode.com/svn
+
+
+
+2013-05-17T20:28:33.008805Z
+94
+eng.sengab@gmail.com
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+2e10988a-c763-3ad7-d4c8-6bd7e43f7860
+
+drawable-hdpi
+dir
+
+drawable-ldpi
+dir
+
+drawable-mdpi
+dir
+
+drawable-xhdpi
+dir
+
+drawable-xxhdpi
+dir
+
+layout
+dir
+
+menu
+dir
+
+values
+dir
+
+values-sw600dp
+dir
+
+values-sw720dp-land
+dir
+
+values-v11
+dir
+
+values-v14
+dir
+

@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/92/trunk/Chess/src/models
+END
+Pawns.java
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/74/trunk/Chess/src/models/Pawns.java
+END
+Rooks.java
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/74/trunk/Chess/src/models/Rooks.java
+END
+Queen.java
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/74/trunk/Chess/src/models/Queen.java
+END
+Position.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/88/trunk/Chess/src/models/Position.java
+END
+King.java
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/74/trunk/Chess/src/models/King.java
+END
+Knights.java
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/74/trunk/Chess/src/models/Knights.java
+END
+Bishops.java
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/74/trunk/Chess/src/models/Bishops.java
+END
+Board.java
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/92/trunk/Chess/src/models/Board.java
+END
+Pieces.java
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/98/trunk/Chess/src/models/Pieces.java
+END
+Global.java
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/88/trunk/Chess/src/models/Global.java
+END

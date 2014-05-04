@@ -1,0 +1,227 @@
+package com.example.chess;
+
+import java.util.ArrayList;
+
+import models.Board;
+import models.Pieces;
+import models.Position;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Rect;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+
+public class GameViewMulti extends View {
+	Paint paint;
+	int width, height;
+	int boardDimension = -1;
+	final String TAG = "GAME VIEW";
+	int xBoundries[], yBoundries[];
+	int boardDx = 0;
+	int boardDy = 0;
+	Pieces[][] grid;
+	Board board;
+
+	public GameViewMulti(Context context) {
+		super(context);
+		width = getWidth();
+		height = getHeight();
+		paint = new Paint();
+		xBoundries = new int[9];
+		xBoundries[0] = 29;
+		yBoundries = new int[9];
+		yBoundries[0] = 29;
+		board = Board.getInstance();
+		grid = board.getBoardPieces();
+		for (int i = 1; i < xBoundries.length; i++) {
+			xBoundries[i] = xBoundries[i - 1] + 43;
+			yBoundries[i] = yBoundries[i - 1] + 43;
+		}
+
+	}
+
+	@SuppressLint("DrawAllocation")
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		board.updateGameState();
+		grid = board.getBoardPieces();
+		if (boardDimension == -1) {
+			int wholeNumber = width / 100;
+			double realNumber = width / 100.0;
+			int reminder = (int) ((realNumber - wholeNumber) * 100);
+			boardDimension = width - reminder;
+			boardDx = (width - boardDimension) / 2;
+			boardDy = (height - boardDimension) / 2;
+			boardDy -= 75;
+			for (int i = 0; i < xBoundries.length; i++) {
+				xBoundries[i] = (xBoundries[i] * boardDimension / 400)
+						+ boardDx;
+			}
+			for (int i = 0; i < yBoundries.length; i++) {
+				yBoundries[i] = (yBoundries[i] * boardDimension / 400)
+						+ boardDy;
+			}
+		}
+
+		Resources res = getResources();
+
+		Bitmap drawnBitmap = BitmapFactory.decodeResource(res,
+				R.drawable.background);
+		Bitmap sDrawnBitmap = Bitmap.createScaledBitmap(drawnBitmap,
+				getWidth(), getHeight(), true);
+		// canvas.drawColor(0xFFAAAAAA);
+		canvas.drawBitmap(sDrawnBitmap, 0, 0, null);
+
+		// draw the board
+		drawnBitmap = BitmapFactory.decodeResource(res, R.drawable.board);
+		sDrawnBitmap = Bitmap.createScaledBitmap(drawnBitmap, boardDimension,
+				boardDimension, true);
+		// canvas.drawColor(0xFFAAAAAA);
+		canvas.drawBitmap(sDrawnBitmap, new Rect(0, 0, boardDimension,
+				boardDimension), new Rect(boardDx, boardDy, boardDx
+				+ boardDimension, boardDy + boardDimension), null);
+
+		int imageDimension = (43 * boardDimension / 400);
+		int activex = GameActivityMulti.getActiveX();
+		int activey = GameActivityMulti.getActiveY();
+		int alpha = 100;
+		if (activex != -1 && activey != -1) {
+			paint.setColor(Color.RED);
+			paint.setAlpha(alpha);
+			canvas.drawRect(xBoundries[activey], yBoundries[activex],
+					xBoundries[activey] + imageDimension, yBoundries[activex]
+							+ imageDimension, paint);
+			if (GameActivityMulti.isNeedHelp()) {
+				ArrayList<Position> vaild = grid[activex][activey]
+						.getValidPositions();
+				paint.setColor(Color.MAGENTA);
+				paint.setAlpha(alpha);
+				for (int i = 0; i < vaild.size(); i++) {
+					Position p = vaild.get(i);
+					canvas.drawRect(xBoundries[p.getY()], yBoundries[p.getX()],
+							xBoundries[p.getY()] + imageDimension,
+							yBoundries[p.getX()] + imageDimension, paint);
+				}
+			}
+		}
+
+		paint = new Paint();
+		// draw chess parts
+
+		for (int i = 0; i < grid.length; i++) {
+			int pDy = yBoundries[i];
+			for (int j = 0; j < grid[i].length; j++) {
+				int pDx = xBoundries[j];
+				if (grid[i][j] != null) {
+					drawnBitmap = BitmapFactory.decodeResource(res,
+							grid[i][j].getPiecesImage());
+					sDrawnBitmap = Bitmap.createScaledBitmap(drawnBitmap,
+							imageDimension, imageDimension, true);
+					// canvas.drawColor(0xFFAAAAAA);
+					canvas.drawBitmap(sDrawnBitmap, pDx, pDy, paint);
+				}
+
+			}
+		}
+		// draw the dead parts
+		// player1
+		ArrayList<Pieces> deadWhite = board.getRemovedWhite();
+		ArrayList<Pieces> deadBlack = board.getRemovedBlack();
+
+		for (int i = 0; i < deadBlack.size(); i++) {
+			drawnBitmap = BitmapFactory.decodeResource(res, deadBlack.get(i)
+					.getPiecesImage());
+			sDrawnBitmap = Bitmap.createScaledBitmap(drawnBitmap,
+					imageDimension / 2, imageDimension / 2, true);
+			canvas.drawBitmap(sDrawnBitmap, 0 + i * (imageDimension / 2), 0,
+					paint);
+
+		}
+
+		// player2
+		for (int i = 0; i < deadWhite.size(); i++) {
+			drawnBitmap = BitmapFactory.decodeResource(res, deadWhite.get(i)
+					.getPiecesImage());
+			sDrawnBitmap = Bitmap.createScaledBitmap(drawnBitmap,
+					imageDimension / 2, imageDimension / 2, true);
+			canvas.drawBitmap(sDrawnBitmap, 0 + i * (imageDimension / 2),
+					yBoundries[yBoundries.length - 1] + 50, paint);
+
+		}
+		// drawnBitmap = BitmapFactory.decodeResource(res, R.drawable.back);
+		// sDrawnBitmap = Bitmap.createScaledBitmap(drawnBitmap, 100, 100,
+		// true);
+		// canvas.drawBitmap(sDrawnBitmap, getWidth() - 100, getHeight() - 100,
+		// null);
+		if (GameActivityMulti.isTimerWork()) {
+			paint.setTextSize(50);
+			paint.setTextAlign(Align.LEFT);
+			canvas.drawText(" TIMER ::" + GameActivityMulti.getTimer(), 20,
+					height - 50, paint);
+		}
+
+		if (GameActivityMulti.isCheckmate()) {
+			drawnBitmap = BitmapFactory.decodeResource(res, R.drawable.winner);
+			sDrawnBitmap = Bitmap.createScaledBitmap(drawnBitmap, getWidth(),
+					getHeight() / 2, true);
+			canvas.drawBitmap(sDrawnBitmap, 0, height / 3, paint);
+		}
+	}
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		height = h;
+		width = w;
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (models.Global.turn) {
+			if (event.getAction() != MotionEvent.ACTION_DOWN)
+				return super.onTouchEvent(event);
+
+			Log.d(TAG, "row " + event.getX() + " column " + event.getY());
+
+			boolean found = false;
+
+			for (int i = 0; i < xBoundries.length - 1; i++) {
+
+				if (event.getX() >= xBoundries[i]
+						&& event.getX() <= xBoundries[i + 1]) {
+
+					for (int j = 0; j < yBoundries.length - 1; j++) {
+
+						if (event.getY() >= yBoundries[j]
+								&& event.getY() <= yBoundries[j + 1]) {
+
+							Log.d(TAG, "row " + j + " column " + i);
+							GameActivityMulti.getValidPositions(j, i);
+
+							found = true;
+							break;
+						}
+					}
+				}
+				if (found)
+					break;
+			}
+			if (event.getX() >= width - 100 && event.getX() < width
+					&& event.getY() >= height - 100 && event.getY() < height) {
+
+				Log.d(TAG, "finish");
+			}
+		}
+		return super.onTouchEvent(event);
+	}
+
+}

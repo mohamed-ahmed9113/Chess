@@ -1,0 +1,210 @@
+package com.example.chess;
+
+import java.util.ArrayList;
+
+import models.Board;
+import models.Global;
+import models.Pieces;
+import models.Position;
+import player.Player;
+import player.PlayerAI;
+import player.PlayerHuman;
+import player.tempAI;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.KeyEvent;
+
+@SuppressLint("NewApi")
+public class GameActivity extends Activity {
+	private static Board board;
+	private static int currentPlayer = -1;
+	private static Pieces[][] grid;
+	private static int activeX = -1;
+	private static int activeY = -1;
+	static PlayerHuman player1;
+	static PlayerHuman player2;
+	static PlayerAI ai;
+	static GameView view;
+	static boolean needHelp = true;
+	private static int hard;
+	static int timer = 60;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		hard = getIntent().getIntExtra("hard", 2);
+		Position.initializePositions();
+		player1 = new PlayerHuman(0);
+		player2 = new PlayerHuman(1);
+		ai = new PlayerAI(1);
+		currentPlayer = player1.getSide();
+		board = Board.getInstance();
+		// board.initBoard();
+		// board.populateBoard();
+		grid = board.getBoardPieces();
+		view = new GameView(this);
+		setContentView(view);
+		/*
+		 * new Thread(new Runnable() {
+		 * 
+		 * @Override public void run() { // TODO Auto-generated method stub try
+		 * { while (timer > 0) { Thread.sleep(1000); timer--; runOnUiThread(new
+		 * Runnable() {
+		 * 
+		 * @Override public void run() { view.invalidate();
+		 * 
+		 * } }); } } catch (InterruptedException e) { // TODO Auto-generated
+		 * catch block e.printStackTrace(); } }
+		 * 
+		 * }).start();
+		 */
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			Board.setBoard(null);
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	public static void getValidPositions(int x, int y) {
+		Player ptemp;
+		if (player1 == null) {
+			ptemp = player2;
+		} else {
+			ptemp = player1;
+		}
+		if (activeX == -1 && activeY == -1
+				&& board.isPieceOnSquare(x, y, ptemp.getSide())
+				&& currentPlayer == ptemp.getSide()) {
+			activeX = x;
+			activeY = y;
+			Pieces p = board.getBoardPieces()[x][y];
+
+		} else if ((activeX != x || activeY != y)) {
+			if (doMove(x, y, activeX, activeY)) {
+				activeX = -1;
+				activeY = -1;
+			} else {
+				// illegalMove=true;
+				activeX = -1;
+				activeY = -1;
+			}
+		}
+
+		view.invalidate();
+		if (Global.turn == false) {
+			// WAIT HERE FOR THE OTHER PLAYER TURN
+
+			changePlayer();
+		}
+		// return pos;
+	}
+
+	private static boolean doMove(int newX, int newY, int oldX, int oldY) {
+		// TODO Auto-generated method stub
+		boolean checkmate = false;
+		if (board.isPieceOnSquare(oldX, oldY, currentPlayer)) {
+			Pieces p = board.getBoardPieces()[oldX][oldY];
+			if (currentPlayer == player1.getSide()) {
+				if (p.doMove(player1, Position.getPos(newX, newY), false, board)) {
+					checkmate = checkCheckmate(player1, player2);
+					changePlayer();
+					return true;
+				}
+			} else {
+				if (p.doMove(player2, Position.getPos(newX, newY), false, board)) {
+					checkmate = checkCheckmate(player1, player2);
+					changePlayer();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean checkCheckmate(Player player1, Player player2) {
+		// check if player1 is in checkmate
+		if (Pieces.isCheckmate(player1)) {
+			String winnerSide;
+			if (player1.getSide() == 0) {
+				winnerSide = "black";
+			} else {
+				winnerSide = "white";
+			}
+			return true;
+		} else if (Pieces.isCheckmate(player2)) {
+			String winnerSide;
+			if (player2.getSide() == 0) {
+				winnerSide = "black";
+			} else {
+				winnerSide = "white";
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public static void changePlayer() {
+
+		Global.turn = !Global.turn;
+
+		if (currentPlayer == player1.getSide()) {
+			currentPlayer = player2.getSide();
+			tempAI comp = new tempAI(ai, player1, board, hard);
+			Position p = comp.play();
+			ArrayList<Pieces> black = board.getCertainColor(player2.getSide());
+			for (int i = 0; i < black.size(); i++) {
+				if (black.get(i).getType() == p.getCurrentone().getType()
+						&& black.get(i).getNumber() == p.getCurrentone()
+								.getNumber()) {
+					black.get(i).doMove(ai, p, false, board);
+					break;
+				}
+			}
+			changePlayer();
+		} else {
+			currentPlayer = player1.getSide();
+		}
+
+	}
+
+	public static int getTimer() {
+		return timer;
+	}
+
+	public static void setTimer(int timer) {
+		GameActivity.timer = timer;
+	}
+
+	public static int getActiveX() {
+		return activeX;
+	}
+
+	public static int getActiveY() {
+		return activeY;
+	}
+
+	public static boolean isNeedHelp() {
+		return needHelp;
+	}
+
+	public static Board getBoard() {
+		return board;
+	}
+
+}

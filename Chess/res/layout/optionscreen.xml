@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <CheckBox
+        android:id="@+id/CVH"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="23dp"
+        android:text="Compu VS Human" />
+
+    <CheckBox
+        android:id="@+id/Online"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/HVH"
+        android:layout_below="@+id/HVH"
+        android:layout_marginTop="21dp"
+        android:text="Online Game " />
+
+    <CheckBox
+        android:id="@+id/HVH"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/CVH"
+        android:layout_below="@+id/CVH"
+        android:layout_marginTop="15dp"
+        android:text="Human VS Human " />
+
+    <Spinner
+        android:id="@+id/Hardness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Online"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/done "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/Hardness"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="14dp"
+        android:text="done" />
+
+    <CheckBox
+        android:id="@+id/timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/Online"
+        android:layout_alignRight="@+id/Online"
+        android:layout_alignTop="@+id/done "
+        android:text="Timer" />
+
+</RelativeLayout>
